@@ -12,7 +12,7 @@ Studiază [AudioBook.java](comparators/AudioBook.java) și [Book.java](comparato
 - `Comparable<T>` + `compareTo` — sortare naturală (după titlu)
 - `Comparator<T>` — clasă externă cu `compare()` pentru sortare alternativă (după lungime / pagini)
 
-**Ce trebuie să faci:** implementează [Podcast.java](comparators/Podcast.java) după modelul celor două clase. Cerințele sunt scrise in comentarii la inceputul fișierului.
+**Ce trebuie să faci:** implementează [Podcast.java](comparators/Podcast.java) după modelul celor două clase. Cerințele sunt scrise ca comentarii în fișier.
 
 ---
 
