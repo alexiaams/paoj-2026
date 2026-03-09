@@ -139,7 +139,25 @@ public class ZooService {
      *   3. System.out.println("Cel mai bătrân animal: " + oldest.describe());
      */
     public void findOldest() {
-        // TODO: implementează aici
+        
+        if(animals.isEmpty())
+        {
+            System.out.println("Grădina zoologică este goală.");
+     
+        }
+        else
+        {
+            Animal oldest = animals.get(0);
+            for(Animal a : animals)
+            {
+                if (a.getAge() > oldest.getAge())
+                {
+                    oldest = a;
+                }
+            }
+            System.out.println("Cel mai bătrân animal: " + oldest.describe());
+        }
+            
     }
 }
 
