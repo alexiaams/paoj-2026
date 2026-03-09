@@ -66,6 +66,8 @@ public class ZooService {
      */
     public void addAnimal(Animal a) {
         // TODO: implementează aici
+        animals.add(a);
+        System.out.println("Adaugat: " + a);
     }
 
     /**
@@ -78,7 +80,18 @@ public class ZooService {
      *   System.out.println("  " + (i+1) + ". " + animals.get(i).describe());
      */
     public void listAll() {
-        // TODO: implementează aici
+        if (animals.isEmpty())
+        {
+            System.out.println("Grădina zoologică este goală.");
+        }
+        else
+        {
+            for(int i = 0; i < animals.size(); i++)
+            {
+                System.out.println(" " + (i+1) + ". " + animals.get(i).describe());
+            }
+        }
+
     }
 
     /**
@@ -95,7 +108,22 @@ public class ZooService {
      *       La final, verifică if (!found).
      */
     public void listByType(String type) {
-        // TODO: implementează aici
+
+        boolean found = false;
+
+        for(Animal an : animals)
+        {
+            if(an.getClass().getSimpleName().equals(type))
+            {
+                System.out.println(an);
+                found = true;
+
+            }
+        }
+        if(found == false)
+        {
+             System.out.println("Nu există animale de tipul: " + type);
+        }
     }
 
     /**
