@@ -1,21 +1,179 @@
 # PAOJ 2026
 
-Proiect educațional pentru cursul **Programare Avansată pe Obiecte în Java**.
-
-Programare Avansată pe Obiecte în Java — materiale și resurse pentru cursul din 2026.
+Materiale și resurse pentru cursul **Programare Avansată pe Obiecte în Java** — 2026.
 
 ---
 
-
 ## Laboratoare
 
-| Laborator | Subiect |
-|-----------|---------|
-| [laboratory00](src/com/pao/laboratory00/Readme.md) | Primul program, array-uri, Scanner |
-| [laboratory01](src/com/pao/laboratory01/Readme.md) | Clase, încapsulare, Singleton, Comparator |
+| Laborator                                          | Subiect                                                          |
+|----------------------------------------------------|------------------------------------------------------------------|
+| [laboratory00](src/com/pao/laboratory00/Readme.md) | Primul program, array-uri, Scanner                               |
+| [laboratory01](src/com/pao/laboratory01/Readme.md) | Clase, încapsulare, Singleton, Comparator                        |
 | [laboratory02](src/com/pao/laboratory02/Readme.md) | Moștenire, clase abstracte, interfețe, equals/hashCode, colecții |
 | [laboratory03](src/com/pao/laboratory03/Readme.md) | Map, enum-uri, excepții custom |
 
+Începând cu **laboratory04**, soluțiile se trimit pe GitHub la un fork personal al acestui repo.
+**Data limită:** miercuri, ora 23:59, în fiecare săptămână.
+
+Mai jos găsești:
+1. [Cum trimiți soluțiile](#1-cum-trimiți-soluțiile) — fork, configurare remotes, commit săptămânal
+2. [Formularul de înregistrare](#2-completați-url-ul-fork-ului) — link fork personal
+3. [Punctarea laboratoarelor](#3-punctarea-laboratoarelor) — prezență, obligatoriu, bonus
+
+---
+
+## 1. Cum trimiți soluțiile
+
+> 🎬 **Video tutorial:** [Cum faci fork și trimiți soluțiile — YouTube](https://www.youtube.com/watch?v=PLACEHOLDER)
+>
+> Partea 1 - fork, o singură dată la începutul semestrului
+> 
+> https://youtu.be/ICJUYkHkWr4
+> 
+> Partea 2 - flux săptămânal pentru fiecare laborator
+> 
+> https://youtu.be/a27-0an-bTo
+
+
+### Pre-rechizite
+
+- ✅ Cont pe [github.com](https://github.com) (gratuit)
+- ✅ Git instalat — verifică cu `git --version` ([descarcă de aici](https://git-scm.com/downloads) dacă nu ai)
+- ✅ Autentificare configurată — [GitHub CLI](https://cli.github.com/) (`gh auth login`) sau SSH key
+
+---
+
+<details open>
+<summary><h3>VARIANTA A — ai clonat deja repo-ul cursului</h3></summary>
+
+**1. Creează fork-ul pe GitHub:**
+
+- Deschide [https://github.com/stefaneduard-deaconu/paoj-2026](https://github.com/stefaneduard-deaconu/paoj-2026)
+- Click **Fork** (dreapta sus) → **Create fork**
+- Acum ai `https://github.com/USERNAME-TĂU/paoj-2026` pe contul tău
+
+**2. Redenumește remote-ul și adaugă fork-ul:**
+
+```bash
+cd calea/spre/paoj-2026
+git remote rename origin upstream
+git remote add origin https://github.com/USERNAME-TĂU/paoj-2026.git
+```
+
+**3. Push inițial:**
+
+```bash
+git push -u origin main
+```
+
+**4. Verifică:**
+
+```bash
+git remote -v
+# origin    https://github.com/USERNAME-TĂU/paoj-2026.git             (fork-ul tău)
+# upstream  https://github.com/stefaneduard-deaconu/paoj-2026.git     (repo-ul cursului)
+```
+
+✅ **Gata!** Configurația ta e identică cu Varianta B.
+
+</details>
+
+<details>
+<summary><h3>VARIANTA B — nu ai clonat încă repo-ul</h3></summary>
+
+**1. Creează fork-ul și clonează-l:**
+
+- Deschide [https://github.com/stefaneduard-deaconu/paoj-2026](https://github.com/stefaneduard-deaconu/paoj-2026)
+- Click **Fork** → **Create fork**
+
+```bash
+git clone https://github.com/USERNAME-TĂU/paoj-2026.git
+cd paoj-2026
+```
+
+**2. Adaugă repo-ul cursului ca `upstream`:**
+
+```bash
+git remote add upstream https://github.com/stefaneduard-deaconu/paoj-2026.git
+```
+
+**3. Verifică:**
+
+```bash
+git remote -v
+# origin    https://github.com/USERNAME-TĂU/paoj-2026.git             (fork-ul tău)
+# upstream  https://github.com/stefaneduard-deaconu/paoj-2026.git     (repo-ul cursului)
+```
+
+</details>
+
+---
+
+### Flux săptămânal
+
+**1. Preiei branch-ul nou de pe `upstream`:**
+
+```bash
+git fetch upstream labX   # înlocuiește X cu numărul lab (ex: lab04)
+git checkout -b labX --track upstream/labX
+git push -u origin labX   # setează origin/labX ca remote tracking
+```
+
+> Aceasta creează un branch local `labX` care urmărește `upstream/labX`. Puteți folosi `-u` later dacă nu ați folosit `--track`.
+
+**2. Lucrează** la exerciții — creează clase, completează TODO-uri.
+
+**3. Salvează și trimiți soluția:**
+
+```bash
+git add .
+git commit -m "Lab04: exercitiile 1-4 completate"
+git push -u origin labX
+```
+
+**4. Submit** — trimite link-ul fork-ului pe platforma de curs.
+
+### Greșeli frecvente
+
+| Problemă | Soluție |
+|----------|---------|
+| `fatal: remote upstream already exists` | Upstream e deja adăugat — skip acest pas |
+| `fatal: refusing to merge unrelated histories` | `git merge upstream/main --allow-unrelated-histories` |
+| Conflicte la merge | `git status` → rezolvă fișierele → `git add .` → `git commit` |
+| Push rejected | `git pull origin main --rebase` apoi `git push` |
+
+## 2. Completați URL-ul fork-ului
+
+Înregistrează-te cu link-ul fork-ului personal și alege proiectul de laborator:
+
+[https://forms.gle/zKPvTiP3oTJrxhR19](https://forms.gle/zKPvTiP3oTJrxhR19)
+
+
+## 3. Punctarea laboratoarelor
+
+### Structura notei finale
+
+| Componentă | Pondere |
+|------------|---------|
+| Proiect individual | 50% |
+| Laboratoare (10 din 14) | 25% |
+| Activitate și prezență | 25% |
+
+### Prezență
+
+- **10 prezențe obligatorii** din 14 laboratoare
+- Laburile 1–3 sunt punctate pentru prezență + soluție completă
+- La Lab 03, exercițiul bonus era opțional — absența lui nu scade punctajul
+
+### Laboratoarele 4–14
+
+Fiecare laborator valorează **2.5%** din nota finală:
+
+| Ce rezolvi | Punctaj |
+|------------|---------|
+| Prezență + exerciții obligatorii | 1.5% |
+| Exercițiul bonus | 1.0% |
 
 ---
 
@@ -109,82 +267,59 @@ git push origin labX  # origin is your fork.
 
 ### 1. Cum pot să obțin un job pe un proiect Java?
 
-Pentru a lucra pe un proiect Java real, cel mai important lucru în prezent este să înveți **Spring Boot** pentru backend. Spring Boot este frameworkul dominant în industrie pentru aplicații enterprise Java și este cerut în marea majoritate a anunțurilor de angajare pentru dezvoltatori Java.
+Cel mai important lucru în prezent este **Spring Boot** — frameworkul dominant pentru aplicații enterprise Java, cerut în marea majorității anunțurilor de angajare.
 
-Pe lângă Spring Boot, **ingineria cloud** a devenit o competență esențială. Certificările cloud — în special certificările **AWS** (Amazon Web Services) — sunt foarte apreciate de angajatori și îți cresc semnificativ șansele de angajare. Este un domeniu în care eu însumi investesc în prezent, urmând o certificare AWS.
+Pe lângă asta, **ingineria cloud** e esențială. Certificările **AWS** sunt foarte apreciate și cresc șansele de angajare — un domeniu în care investesc și eu.
 
 **Pe scurt:**
-- Învață **Spring Boot** pentru a construi aplicații backend Java solide.
-- Obține o **certificare AWS** (sau alt furnizor cloud) pentru a demonstra competențe în cloud engineering.
+- **Spring Boot** — aplicații backend Java solide
+- **Certificare AWS** — competențe cloud
 
 ---
 
 ### 2. Pot îmbina mai mulți comparatori în `Arrays.sort()` pentru a sorta după multiple criterii?
 
-Da! Poți îmbina mai mulți comparatori în Java folosind metoda **`thenComparing()`**, introdusă în Java 8. Aceasta permite crearea unui lanț de criterii de sortare (lexicografice): dacă primul comparator consideră elementele egale, se trece la următorul.
+Da, folosind **`thenComparing()`** (Java 8+). Dacă primul comparator consideră elemente egale, se trece la următorul criteriu.
 
-**Metode principale pentru concatenare:**
-- `Comparator.comparing()` — creează comparatorul de bază (primul criteriu).
-- `.thenComparing()` — adaugă un sub-criteriu evaluat doar dacă rezultatul anterior a fost `0` (egalitate).
-- `.reversed()` — inversează ordinea unui comparator specific sau a întregului lanț.
+**Metode principale:**
+- `Comparator.comparing()` — primul criteriu
+- `.thenComparing()` — criteriu secundar (la egalitate)
+- `.reversed()` — inversează ordinea
 
-**Exemplu practic:**
-
-Dacă ai o listă de obiecte `Angajat` și vrei să sortezi întâi după `Nume` (criteriu principal), apoi după `Vârstă` (sub-criteriu):
+**Exemplu:**
 
 ```java
-import java.util.Comparator;
-import java.util.List;
-
-// Sortează după nume, apoi după vârstă
 listaAngajati.sort(
     Comparator.comparing(Angajat::getNume)
               .thenComparing(Angajat::getVarsta)
 );
 ```
 
-**Variante avansate:**
-- **Sortare inversă pe un singur criteriu:** Folosește `Comparator.comparing(Angajat::getNume, Comparator.reverseOrder())` pentru a inversa doar primul criteriu, menținând sub-criteriile în ordine naturală.
-- **Gestionarea valorilor nule:** Folosește `nullsFirst()` sau `nullsLast()` în interiorul lanțului pentru a evita `NullPointerException`.
-- **Metode primitive:** Pentru performanță mai bună, folosește variantele specializate precum `thenComparingInt()` sau `thenComparingLong()` pentru a evita procesul de autoboxing.
+**Variante utile:**
+- Inversare: `Comparator.comparing(Angajat::getNume, Comparator.reverseOrder())`
+- Valori null: `nullsFirst()` / `nullsLast()`
+- Performanță: `thenComparingInt()` / `thenComparingLong()` evită autoboxing
 
-## 3. Cum rulez Java din terminal (pentru începători)
+### 3. Cum rulez Java din terminal?
 
-### 1. Am Java instalat?
+**Am Java instalat?**
 
 ```bash
 java -version
 javac -version
 ```
 
-Dacă primești un număr de versiune (ex: `21.0.x`), ești pregătit.  
-Dacă nu, descarcă JDK de la [adoptium.net](https://adoptium.net/) și instalează-l.
+Dacă primești un număr de versiune (ex: `21.0.x`), ești pregătit.
+Dacă nu, descarcă JDK de la [adoptium.net](https://adoptium.net/).
 
----
-
-### 2. Compilez un fișier `.java`
+**Compilare și rulare:**
 
 ```bash
-javac NumeleFisierului.java
+javac NumeleFisierului.java   # generează NumeleFisierului.class
+java NumeleFisierului         # fără extensia .class
 ```
 
-Se generează un fișier `NumeleFisierului.class` în același folder.
-
----
-
-### 3. Rulez clasa compilată
-
-```bash
-java NumeleFisierului
-```
-
-> ⚠️ Fără extensia `.class` — scrii doar numele clasei.
-
----
-
-### 4. Clasa are `package`? Compilez din rădăcina proiectului
-
-Dacă fișierul conține `package com.pao.laboratory00;`, trebuie să lucrezi **din folderul `src/`**:
+**Clasa are `package`? Lucrează din `src/`:**
 
 ```bash
 cd src
@@ -192,34 +327,12 @@ javac com/pao/laboratory00/Main.java
 java com.pao.laboratory00.Main
 ```
 
-> Calea la compilare folosește `/` (sau `\` pe Windows), iar la rulare folosești `.` (puncte).
+> Compilarea folosește `/` (sau `\` pe Windows), rularea folosește `.` (puncte).
 
----
+**Rezumat rapid:**
 
-### 5. Compilez mai multe fișiere dintr-un pachet
-
-```bash
-javac com/pao/laboratory01/model/Dog.java com/pao/laboratory01/Main.java
-```
-
-Sau compilezi tot pachetul dintr-o dată:
-
-```bash
-javac com/pao/laboratory01/**/*.java
-```
-
----
-
-### 6. Trimit date de la tastatură (Scanner)
-
-Rulezi normal cu `java ...` și scrii în terminal când programul așteaptă input, apoi apeși **Enter**.
-
----
-
-### 7. Rezumat rapid
-
-| Pas | Comandă |
-|-----|---------|
+| Acțiune | Comandă |
+|---------|---------|
 | Verificare Java | `java -version` |
 | Compilare (fără pachet) | `javac Main.java` |
 | Rulare (fără pachet) | `java Main` |

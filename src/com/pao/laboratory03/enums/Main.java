@@ -1,7 +1,5 @@
 package com.pao.laboratory03.enums;
 
-import java.util.Scanner;
-
 /**
  * Exercițiul 2 — Enum-uri
  *
@@ -51,42 +49,8 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String[] args) {
-
-        for (Priority p : Priority.values())
-        {
-            System.out.println(p.getEmoji() + " "+ p.name() + " (level = "+ p.getLevel() + ", color = " + p.getColor() + ")");
-        }
-        
-        Scanner scanner = new Scanner(System.in);
-
-        int p = scanner.nextInt();
-
-        switch (p) {
-            case 1:
-                System.out.println("Prioritate scazuta!");
-                break;
-            case 2:
-                System.out.println(" Prioritate medie!");
-                break;
-            case 3:
-                System.out.println("⚠️ Atenție! Prioritate ridicata!");
-                break;
-            case 4:
-                System.out.println("⚠️ Atenție! Prioritate critica!");
-                break;
-            default:
-                break;
-        }
-
-        Priority fromString = Priority.valueOf("HIGH");
-        System.out.println("Priority.valueOf(HIGH) = " + fromString);
-
-        System.out.println("HIGH == HIGH? " + (fromString == Priority.HIGH));
-        System.out.println("HIGH == LOW? " + (fromString == Priority.LOW));
-
-        for (Priority pr : Priority.values()) {
-            System.out.println(pr.name() + ": name=" + pr.name() + ", ordinal=" + pr.ordinal());
-        }
+        // TODO: implementează pașii de mai sus
+        // Hint: creează mai întâi fișierul Priority.java în acest pachet
     }
 }
 
