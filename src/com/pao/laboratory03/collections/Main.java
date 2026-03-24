@@ -1,4 +1,4 @@
-package com.pao.laboratory02.collections;
+package com.pao.laboratory03.collections;
 
 import java.util.ArrayList;
 import java.util.HashSet;

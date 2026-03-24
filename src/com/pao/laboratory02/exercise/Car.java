@@ -1,4 +1,4 @@
-package com.pao.laboratory01.exercise;
+package com.pao.laboratory02.exercise;
 
 import java.util.Arrays;
 
