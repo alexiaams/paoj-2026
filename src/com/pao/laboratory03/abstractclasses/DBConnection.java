@@ -1,4 +1,4 @@
-package com.pao.laboratory02.abstractclasses;
+package com.pao.laboratory03.abstractclasses;
 
 /**
  * Clasă abstractă — nu poate fi instanțiată direct.

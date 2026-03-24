@@ -1,9 +1,9 @@
-package com.pao.laboratory02.exercise4;
+package com.pao.laboratory03.exercise4;
 
-import com.pao.laboratory02.exercise4.model.Cat;
-import com.pao.laboratory02.exercise4.model.Dog;
-import com.pao.laboratory02.exercise4.model.Parrot;
-import com.pao.laboratory02.exercise4.service.ZooService;
+import com.pao.laboratory03.exercise4.model.Cat;
+import com.pao.laboratory03.exercise4.model.Dog;
+import com.pao.laboratory03.exercise4.model.Parrot;
+import com.pao.laboratory03.exercise4.service.ZooService;
 
 import java.util.Scanner;
 

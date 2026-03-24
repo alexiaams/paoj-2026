@@ -1,4 +1,4 @@
-package com.pao.laboratory02.exercise2;
+package com.pao.laboratory03.exercise2;
 
 /**
  * TODO: Adaugă equals(Object o) și hashCode() — doi studenți sunt egali dacă au același id.

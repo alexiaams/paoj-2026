@@ -1,4 +1,4 @@
-package com.pao.laboratory02.strings;
+package com.pao.laboratory03.strings;
 
 /**
  * Demo: String (imutabil) vs StringBuilder (mutabil, rapid) vs StringBuffer (mutabil, thread-safe).

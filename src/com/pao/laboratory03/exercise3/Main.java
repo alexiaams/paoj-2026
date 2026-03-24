@@ -1,8 +1,8 @@
-package com.pao.laboratory02.exercise3;
+package com.pao.laboratory03.exercise3;
 
-import com.pao.laboratory02.exercise3.model.Manager;
-import com.pao.laboratory02.exercise3.model.Programator;
-import com.pao.laboratory02.exercise3.service.AngajatService;
+import com.pao.laboratory03.exercise3.model.Manager;
+import com.pao.laboratory03.exercise3.model.Programator;
+import com.pao.laboratory03.exercise3.service.AngajatService;
 
 /** Testează Programator, Manager, AngajatService. NU modifica. */
 public class Main {

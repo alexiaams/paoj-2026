@@ -1,4 +1,4 @@
-package com.pao.laboratory01.comparators;
+package com.pao.laboratory02.comparators;
 
 // cream in pachetul comparators o clasa audio book cu lungime (secunde) si titlu (string)
 // si vom crea o metoda main in care sortam in 2 moduri cateva carti.

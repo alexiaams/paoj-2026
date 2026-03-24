@@ -1,4 +1,4 @@
-package com.pao.laboratory02.exercise4.model;
+package com.pao.laboratory03.exercise4.model;
 
 /**
  * Clasă abstractă: implementează Describable, dar lasă sound() abstract.

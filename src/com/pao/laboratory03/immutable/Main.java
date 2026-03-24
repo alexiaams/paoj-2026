@@ -1,4 +1,4 @@
-package com.pao.laboratory02.immutable;
+package com.pao.laboratory03.immutable;
 
 /** Demo: imutabilitate — nu există setteri, String se comportă la fel. */
 public class Main {

@@ -1,6 +1,6 @@
-package com.pao.laboratory02.exercise3.service;
+package com.pao.laboratory03.exercise3.service;
 
-import com.pao.laboratory02.exercise3.model.Angajat;
+import com.pao.laboratory03.exercise3.model.Angajat;
 
 import java.util.ArrayList;
 import java.util.List;

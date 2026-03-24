@@ -1,4 +1,4 @@
-package com.pao.laboratory02.immutable;
+package com.pao.laboratory03.immutable;
 
 /**
  * Clasă imutabilă: final class, final fields, fără setteri.

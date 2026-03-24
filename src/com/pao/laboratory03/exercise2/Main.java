@@ -1,4 +1,4 @@
-package com.pao.laboratory02.exercise2;
+package com.pao.laboratory03.exercise2;
 
 import java.util.HashSet;
 import java.util.Set;

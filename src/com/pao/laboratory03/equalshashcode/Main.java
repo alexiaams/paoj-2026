@@ -1,4 +1,4 @@
-package com.pao.laboratory02.equalshashcode;
+package com.pao.laboratory03.equalshashcode;
 
 import java.util.HashSet;
 import java.util.Set;
