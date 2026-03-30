@@ -1,4 +1,4 @@
-package com.pao.laboratory02.exercise1;
+package com.pao.laboratory03.exercise1;
 
 /** Testează Circle și Rectangle. NU modifica. Rulează după ce completezi TODO-urile. */
 public class Main {

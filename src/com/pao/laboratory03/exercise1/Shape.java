@@ -1,4 +1,4 @@
-package com.pao.laboratory02.exercise1;
+package com.pao.laboratory03.exercise1;
 
 /** Clasă abstractă de bază. DATĂ — nu modifica. */
 public abstract class Shape {
