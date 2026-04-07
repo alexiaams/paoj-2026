@@ -1,0 +1,25 @@
+STANDARD: Laptop, pret: 2500.00 lei [PLACED] - client: Alice
+DISCOUNTED: Headphones, pret: 160.00 lei (-20%) [PLACED] - client: Bob
+GIFT: Sticker, gratuit [PLACED] - client: Charlie
+STANDARD: Mouse, pret: 80.00 lei [PLACED] - client: Alice
+DISCOUNTED: Keyboard, pret: 270.00 lei (-10%) [PLACED] - client: Dave
+
+--- STATS ---
+STANDARD: medie = 1290.00 lei
+DISCOUNTED: medie = 215.00 lei
+GIFT: medie = 0.00 lei
+
+--- FILTER (>= 100.00) ---
+STANDARD: Laptop, pret: 2500.00 lei - client: Alice
+DISCOUNTED: Headphones, pret: 160.00 lei - client: Bob
+DISCOUNTED: Keyboard, pret: 270.00 lei - client: Dave
+
+--- SORT (by client, then by pret) ---
+STANDARD: Mouse, pret: 80.00 lei - client: Alice
+STANDARD: Laptop, pret: 2500.00 lei - client: Alice
+DISCOUNTED: Headphones, pret: 160.00 lei - client: Bob
+GIFT: Sticker, gratuit - client: Charlie
+DISCOUNTED: Keyboard, pret: 270.00 lei - client: Dave
+
+--- SPECIAL (discount > 15%) ---
+DISCOUNTED: Headphones, pret: 160.00 lei (-20%) - client: Bob
