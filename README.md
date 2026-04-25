@@ -1,368 +1,89 @@
 # PAOJ 2026
 
-Materiale și resurse pentru cursul **Programare Avansată pe Obiecte în Java** — 2026.
+Repository for the 2026 edition of **Programare Avansată pe Obiecte în Java**.
+It contains the laboratory exercises, the individual project brief, and the support code used during the course.
 
----
+## What is in this repository
 
-## Proiect
+- `src/com/pao/laboratory01` to `src/com/pao/laboratory08` - laboratory exercises and explanations.
+- `src/com/pao/project/README.md` - requirements for the individual project.
+- `src/com/pao/BankingApp` - a complete example application used in the course materials.
+- `src/com/pao/test` - helper classes used by some laboratory tests.
 
-📁 **[Cerințe proiect individual](src/com/pao/project/README.md)** — Etapa I (24 apr) · Etapa II (5 iun)
+## Course structure
 
+| Laboratory | Main topic |
+|---|---|
+| [laboratory01](src/com/pao/laboratory01/Readme.md) | First program, arrays, `Scanner` |
+| [laboratory02](src/com/pao/laboratory02/Readme.md) | Classes, encapsulation, Singleton, `Comparator` |
+| [laboratory03](src/com/pao/laboratory03/Readme.md) | Inheritance, abstract classes, interfaces, `equals()` / `hashCode()`, collections |
+| [laboratory04](src/com/pao/laboratory04/Readme.md) | `Map`, enums, custom exceptions |
+| [laboratory05](src/com/pao/laboratory05/Readme.md) | Records, advanced `Comparable`, multi-criteria sorting |
+| [laboratory06](src/com/pao/laboratory06/Readme.md) | Interfaces, callbacks, interface hierarchies |
+| [laboratory07](src/com/pao/laboratory07/Readme.md) | Sealed classes and advanced enums |
+| [laboratory08](src/com/pao/laboratory08/Readme.md) | Marker interfaces, cloning, and I/O streams |
 
-## Laboratoare
+## Individual project
 
-| Laborator                                          | Subiect                                                          |
-|----------------------------------------------------|------------------------------------------------------------------|
-| [laboratory01](src/com/pao/laboratory01/Readme.md) | Primul program, array-uri, Scanner                               |
-| [laboratory02](src/com/pao/laboratory02/Readme.md) | Clase, încapsulare, Singleton, Comparator                        |
-| [laboratory03](src/com/pao/laboratory03/Readme.md) | Moștenire, clase abstracte, interfețe, equals/hashCode, colecții |
-| [laboratory04](src/com/pao/laboratory04/Readme.md) | Map, enum-uri, excepții custom                                   |
-| [laboratory05](src/com/pao/laboratory05/Readme.md) | Records, Comparable aprofundat, Comparator multiplu              |
-| [laboratory06](src/com/pao/laboratory06/Readme.md) | Interfețe și clase — studiu detaliat (Comparable, Comparator, callback, extindere) |
-| [laboratory07](src/com/pao/laboratory07/Readme.md) | Sealed classes și enum-uri — concepte avansate                    |
-| [laboratory08](src/com/pao/laboratory08/Readme.md) | Interfețe marker, clonare superficială/profundă și introducere fluxuri I/O |
+The project brief is in [src/com/pao/project/README.md](src/com/pao/project/README.md).
+It describes the two-stage individual project, deadlines, and submission rules.
 
-- `laboratory07` a introdus construcțiile mai noi din limbaj: `sealed` classes și un studiu mai aprofundat al `enum`-urilor.
-- `laboratory08` acoperă interfețele marker (`Cloneable`, `Serializable`), clonarea superficială vs. profundă și introducerea în fluxuri de I/O (`FileReader`, `BufferedReader`, `BufferedWriter`).
-- `laboratory09` va aprofunda fluxurile de I/O: `DataInputStream`/`DataOutputStream`, `RandomAccessFile`, `ByteBuffer`, `try-with-resources` și `Serializable` ca exercițiu obligatoriu.
+## Repository layout
 
-Începând cu **laboratory04**, soluțiile se trimit pe GitHub la un fork personal al acestui repo.
-**Data limită:** vineri, ora 23:59, în fiecare săptămână. Mai multe detalii doua sectiuni mai jos (TODO adauga link)
+```text
+src/
+└── com/pao/
+    ├── laboratory01..08/   laboratory exercises
+    ├── BankingApp/         banking domain example
+    ├── project/            individual project brief
+    └── test/               shared test utilities
+```
 
----
+## Requirements
 
-### TODO NOUTATE laboratory06-laboratory14: verificarea automata a calculelor din exercițiile obligatorii
+- Java Development Kit 17 or newer.
+- A Java-capable IDE such as IntelliJ IDEA or VS Code.
+- Git if you want to follow the fork-and-push workflow used in the course.
 
-You have a jar in the root folder, under ./utils:
+## How to run code
 
-[java-diff-utils-4.15.jar](src/com/pao/test/utils/java-diff-utils-4.15.jar)
+The repository does not use Maven or Gradle. Compile and run Java sources directly.
 
-A .jar file si like an archive of an library, in this case com.github.difflib.
+### Windows PowerShell
 
-Steps needed to run the tests:
-
-
-1. In IntelliJ
-   
-   > Right-click the jar
-   > 
-   > → "Add as Library"
-   > 
-   > → Select your project Module
-   > 
-   > → Ok (button).
-
-2. In VS Code: Update your .classpath or launch config if needed.
-   - Example .classpath entry:
-   ```xml
-   <classpathentry kind="lib" path="src/com/pao/test/utils/java-diff-utils-4.15.jar"/>
-   ```
-    - Example launch config:
-    ```json
-    {
-        "type": "java",
-        "name": "Launch Main",
-        "request": "launch",
-        "mainClass": "com.pao.laboratory04.Main",
-        "classpath": [
-            "src/com/pao/test/utils/java-diff-utils-4.15.jar"
-        ]
-    }
-    ```
-   >  TODO !!! inca lucrez pentru a gasi o solutie clara pentru VS Code.
-
-
-3. How to run in terminal?
-
-#### Windows PowerShell
 ```powershell
-# Compile all files in any folder (replace PATH with src or src\com\pao\laboratory06, etc.)
-javac -d output @((Get-ChildItem -Recurse -Filter "*.java" -Path PATH).FullName)
+# Compile everything under src/
+$files = Get-ChildItem -Recurse -Filter "*.java" -Path src | ForEach-Object { $_.FullName }
+javac -d out @files
 
-# With JAR (for tests)
-javac -d output -cp "lib\java-diff-utils-4.15.jar" @((Get-ChildItem -Recurse -Filter "*.java" -Path PATH).FullName)
-
-# Run
-java -cp output com.pao.laboratory06.exercise1.Main
-java -cp "output;lib\java-diff-utils-4.15.jar" com.pao.laboratory06.exercise1.Test
+# Run a class with a main method
+java -cp out com.pao.laboratory01.Main
 ```
 
-#### macOS / Linux / WSL
-```bash
-# Compile all files in any folder (replace PATH with src or src/com/pao/laboratory06, etc.)
-javac -d output $(find PATH -name "*.java" -type f)
-
-# With JAR (for tests)
-javac -d output -cp "lib/java-diff-utils-4.15.jar" $(find PATH -name "*.java" -type f)
-
-# Run
-java -cp output com.pao.laboratory06.exercise1.Main
-java -cp "output:lib/java-diff-utils-4.15.jar" com.pao.laboratory06.exercise1.Test
-```
-
-⚠️ **Key:** Replace `PATH` with your desired folder — includes all subdirectories automatically.
-- Full project: `src`
-- Single lab: `src/com/pao/laboratory06`
-- Single exercise: `src/com/pao/laboratory06/exercise1`
-
----
-## Revenind la trimiterea solutiilor
-
-
-Mai jos găsești:
-
-0. Ce sa aveti deja instalat (TODO adauga link)
-1. [Cum trimiți soluțiile](#1-cum-trimiți-soluțiile) — fork, configurare remotes, commit săptămânal
-2. [Formularul de înregistrare](#2-completați-url-ul-fork-ului) — link fork personal
-3. [Punctarea laboratoarelor](#3-punctarea-laboratoarelor) — prezență, obligatoriu, bonus
-
-
-
-### 0. Ce sa aveti deja instalat pe calculatoare
-
-- ✅ Cont pe [github.com](https://github.com) (gratuit)
-- ✅ Git instalat — verifică cu `git --version` ([descarcă de aici](https://git-scm.com/downloads) dacă nu ai)
-- ✅ Autentificare configurată — [GitHub CLI](https://cli.github.com/) (`gh auth login`) sau SSH key
-
-Dacă vrei să te conectezi ușor la GitHub din terminal, recomand să instalezi și
-configurezi [GitHub CLI](https://cli.github.com/):
-
-După aceea, scrieti:
+### macOS / Linux / WSL
 
 ```bash
-gh auth login
+javac -d out $(find src -name "*.java" -type f)
+java -cp out com.pao.laboratory01.Main
 ```
 
-Apasati Enter, Enter, Y, Enter, Enter, și te autentifici în browser.
-După ce te întorci în terminal, ar trebui să vezi mesajul "Logged in to github.com as USERNAME".
+If you want to compile only one laboratory, point the compiler to that folder instead of `src/`.
 
-### 1. Cum trimiți soluțiile
+## Submission workflow
 
-> 🎬 **Video tutorial:**
->
-> Partea 1 - fork și setarea a două "remote-uri"
-> (o singură dată la începutul semestrului)
->
-> https://youtu.be/ICJUYkHkWr4
->
-> Partea 2 - flux săptămânal pentru fiecare laborator
->
-> https://youtu.be/a27-0an-bTo
+From laboratory 04 onward, solutions are typically submitted to a personal GitHub fork of this repository.
+The usual workflow is:
 
----
+1. Fetch the latest branch from the course repository.
+2. Create or update your local lab branch.
+3. Commit your work regularly.
+4. Push to your fork before the deadline.
 
-#### Partea 1 - Configurare inițială (o singură dată)
+The project brief contains the exact branch names and deadline information.
 
-**1. Salvează-ți munca curentă (dacă ai folosit Git)**
+## Notes
 
-```bash
-git add .
-git commit -m "Salvare progres înainte de reconfigurare"
-```
-
-> Dacă nu ai folosit Git până acum, poți sări peste acest pas.
-
-**2. Creează fork-ul pe GitHub:**
-
-- Deschide [https://github.com/stefaneduard-deaconu/paoj-2026](https://github.com/stefaneduard-deaconu/paoj-2026)
-- Click **Fork** (dreapta sus) → **Create fork**
-- debifează opțiunea de a include doar `main` (dacă e bifată)
-- Acum ai `https://github.com/USERNAME-TĂU/paoj-2026` pe contul tău
-
-**3. Dacă nu ai folosit încă Git, clonează fork-ul tău.
-
-Adică în contul tău de github găsești repo-ul paoj-2026, iei URL-ul
-(va arăta așa https://github.com/USERNAME-TĂU/paoj-2026.git)
-
-```bash
-git clone https://github.com/USERNAME-TĂU/paoj-2026.git
-# si apoi din IntelliJ sau Code deschizi folderul paoj-2026
-```
-
-**4. Configurezi două remote-uri (repo-ul laboratorului, repo-ul tău)**
-
-remote = URL către un repo Git
-
-După acest pas, vei avea două remote-uri:
-
-- `upstream` — repo-ul original al cursului (https://github.com/stefaneduard-deaconu/paoj-2026.git)
-- `origin` — fork-ul tău (https://github.com/USERNAME-TĂU/paoj-2026.git)
-
-```bash
-git remote add upstream https://github.com/stefaneduard-deaconu/paoj-2026.git
-git remote set-url upstream https://github.com/stefaneduard-deaconu/paoj-2026.git
-git remote add origin https://github.com/USERNAME-TĂU/paoj-2026.git
-git remote set-url origin https://github.com/USERNAME-TĂU/paoj-2026.git
-```
-
-> De ce toate 4?
-> - `add` adaugă un nou remote, dar nu face nimic dacă există deja
-> - `set-url` setează URL-ul remote-ului, necesar dacă în origin ai deja URL-ul cursului în loc de fork-ul tău
-
-**5. Verifică:**
-
-```bash
-git remote -v
-# origin    https://github.com/USERNAME-TĂU/paoj-2026.git             (fork-ul tău)
-# upstream  https://github.com/stefaneduard-deaconu/paoj-2026.git     (repo-ul cursului)
-```
-
-✅ **Gata!** Ai acum un repo local conectat la două remote-uri: `origin` (fork-ul tău) și `upstream` (repo-ul cursului).
-
-#### Partea 2 - Flux săptămânal
-
-**1. Preiei branch-ul nou de pe `upstream`:**
-
-> Vei folosi `lab5` în loc de `labX` pentru laboratory04, `lab6` pentru laboratory05 etc.
-
-```bash
-git fetch upstream lab5   # înlocuiește X cu numărul lab (ex: lab04)
-git checkout -b lab5 --track upstream/lab5
-git push -u origin lab5 
-```
-
-> Comenzile de sus fac următoarele:
-> - `fetch` aduce branch-ul nou de la upstream
-> - `checkout -b` creează un nou branch local numit `labX` care urmărește `upstream/labX`
-
-**2. Lucrează** la exerciții — creează clase, completează TODO-uri.
-
-**3. Salvează și trimiți soluția:**
-
-```bash
-git add .
-git commit -m "LabX: exercitiile 1-4 completate"
-git push origin labX
-```
-
-### 2. Completați URL-ul fork-ului
-
-Trimite link-ul fork-ului pe formularul următor, ca să știm cui oferim punctajul:
-
-[PAOJ 2026 - Alegerea proiectului si Incarcarea activitatii](https://forms.gle/zKPvTiP3oTJrxhR19)
-
-### 3. Punctarea laboratoarelor
-
-#### Structura notei finale
-
-| Componentă              | Pondere |
-|-------------------------|---------|
-| Proiect individual      | 50%     |
-| Laboratoare (12 din 14 fara bonus, 10/11 cu 10/5 bonusuri) | 25%     |
-| Activitate și prezență  | 25%     |
-
-#### Prezență
-
-- **12 prezențe obligatorii** din 14 laboratoare (sau 11+5bonusuri, sau 10+10 bonusuri)
-- Laburile 1–3 sunt punctate pentru prezență + soluție completă
-- La Lab 04, exercițiul bonus era opțional — absența lui nu scade punctajul
-
-#### Laboratoarele 4–14
-
-Fiecare laborator valorează **2.08(3)%** din nota finală:
-
-| Ce rezolvi                       | Punctaj                   |
-|----------------------------------|---------------------------|
-| Prezență + exerciții obligatorii | 2.08(3)% (practic 25%/12) |
-| Exercițiul bonus                 | 0.4%                      |
-
-#### Prezenta
-
--> se deduce din submit-ul saptamanal, plus prezentarea o data la 2 saptamani a ce ati lucrat (online/fizic)
-
-#### Punctajul (TODO sa revin cu rezumat la fiecare saptamana in parte)
-
--> in laboratoarele 4-14 aveti si exercitii bonus, care valoreaza 2.5% din punctajul total al prezentei+activitate.
-
-<br />
-<br />
----
-Urmatoare sectiune contine doar intrebari adresate de voi ca studenti, si raspunsurile pe care le-ati gasit sau le-am gasit impreuna.
----
-<br />
-<br />
-
-## Întrebări frecvente (FAQ)
-
-### 1. Cum pot să obțin un job pe un proiect Java?
-
-Cel mai important lucru în prezent este **Spring Boot** — frameworkul dominant pentru aplicații enterprise Java, cerut
-în marea majorității anunțurilor de angajare.
-
-Pe lângă asta, **ingineria cloud** e esențială. Certificările **AWS** sunt foarte apreciate și cresc șansele de
-angajare — un domeniu în care investesc și eu.
-
-**Pe scurt:**
-
-- **Spring Boot** — aplicații backend Java solide
-- **Certificare AWS** — competențe cloud
-
----
-
-### 2. Pot îmbina mai mulți comparatori în `Arrays.sort()` pentru a sorta după multiple criterii?
-
-Da, folosind **`thenComparing()`** (Java 8+). Dacă primul comparator consideră elemente egale, se trece la următorul
-criteriu.
-
-**Metode principale:**
-
-- `Comparator.comparing()` — primul criteriu
-- `.thenComparing()` — criteriu secundar (la egalitate)
-- `.reversed()` — inversează ordinea
-
-**Exemplu:**
-
-```java
-listaAngajati.sort(
-        Comparator.comparing(Angajat::getNume)
-              .
-
-thenComparing(Angajat::getVarsta)
-);
-```
-
-**Variante utile:**
-
-- Inversare: `Comparator.comparing(Angajat::getNume, Comparator.reverseOrder())`
-- Valori null: `nullsFirst()` / `nullsLast()`
-- Performanță: `thenComparingInt()` / `thenComparingLong()` evită autoboxing
-
-### 3. Cum rulez Java din terminal?
-
-**Am Java instalat?**
-
-```bash
-java -version
-javac -version
-```
-
-Dacă primești un număr de versiune (ex: `21.0.x`), ești pregătit.
-Dacă nu, descarcă JDK de la [adoptium.net](https://adoptium.net/).
-
-**Compilare și rulare:**
-
-```bash
-javac NumeleFisierului.java   # generează NumeleFisierului.class
-java NumeleFisierului         # fără extensia .class
-```
-
-**Clasa are `package`? Lucrează din `src/`:**
-
-```bash
-cd src
-javac com/pao/laboratory01/Main.java
-java com.pao.laboratory01.Main
-```
-
-> Compilarea folosește `/` (sau `\` pe Windows), rularea folosește `.` (puncte).
-
-**Rezumat rapid:**
-
-| Acțiune                           | Comandă                         |
-|-----------------------------------|---------------------------------|
-| Verificare Java                   | `java -version`                 |
-| Compilare (fără pachet)           | `javac Main.java`               |
-| Rulare (fără pachet)              | `java Main`                     |
-| Compilare (cu pachet, din `src/`) | `javac com/pao/lab01/Main.java` |
-| Rulare (cu pachet, din `src/`)    | `java com.pao.lab01.Main`       |
+- Some laboratories include small test runners or helper classes under `src/com/pao/test`.
+- The `BankingApp` package is an illustrative domain model used in examples and demonstrations.
+- If you are using VS Code, make sure the workspace is opened at the repository root so package paths resolve correctly.
 
