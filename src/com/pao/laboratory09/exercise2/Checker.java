@@ -4,6 +4,6 @@ import com.pao.test.IOTest;
 
 public class Checker {
     public static void main(String[] args) {
-        IOTest.runFlat("src/com/pao/laboratory09/exercise2/tests", Main::main);
+        IOTest.runFlat("paoj-2026/src/com/pao/laboratory09/exercise2/tests", Main::main);
     }
 }

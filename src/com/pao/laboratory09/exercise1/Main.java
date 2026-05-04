@@ -7,23 +7,82 @@ public class Main {
     private static final String OUTPUT_FILE = "output/lab09_ex1.ser";
 
     public static void main(String[] args) throws Exception {
-        // TODO: Implementează conform Readme.md
-        //
-        // 1. Citește N din stdin, apoi cele N tranzacții (id suma data contSursa contDestinatie tip)
-        // 2. Setează câmpul note = "procesat" pe fiecare tranzacție înainte de serializare
-        // 3. Serializează lista de tranzacții în OUTPUT_FILE cu ObjectOutputStream (try-with-resources)
-        // 4. Deserializează lista din OUTPUT_FILE cu ObjectInputStream (try-with-resources)
-        // 5. Procesează comenzile din stdin până la EOF:
-        //    - LIST          → afișează toate tranzacțiile, câte una pe linie
-        //    - FILTER yyyy-MM → afișează tranzacțiile cu data care începe cu yyyy-MM
-        //                       sau "Niciun rezultat." dacă nu există
-        //    - NOTE id        → afișează "NOTE[id]: <valoarea câmpului note>"
-        //                       sau "NOTE[id]: not found" dacă id-ul nu există
-        //
-        // Format linie tranzacție:
-        //   [id] data tip: suma RON | contSursa -> contDestinatie
-        //   Ex: [1] 2024-01-15 CREDIT: 1500.00 RON | RO01SRC1 -> RO01DST1
+        Scanner scanner = new Scanner(System.in);
+        List<Tranzactie> tranzactii = new ArrayList<>();
 
-        System.out.println("TODO: implementează exercițiul 1");
+        // 1. Citește N și apoi N tranzacții
+        int n = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        for (int i = 0; i < n; i++) {
+            int id = scanner.nextInt();
+            double suma = scanner.nextDouble();
+            String data = scanner.next();
+            String contSursa = scanner.next();
+            String contDestinatie = scanner.next();
+            TipTranzactie tip = TipTranzactie.valueOf(scanner.next());
+            scanner.nextLine(); // Consume newline
+
+            Tranzactie tranzactie = new Tranzactie(id, suma, data, contSursa, contDestinatie, tip);
+            tranzactii.add(tranzactie);
+        }
+
+        // 2. Setează note = "procesat" pe fiecare tranzacție
+        for (Tranzactie t : tranzactii) {
+            t.setNote("procesat");
+        }
+
+        // 3. Serializează lista în OUTPUT_FILE
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(OUTPUT_FILE))) {
+            oos.writeObject(tranzactii);
+        }
+
+        // 4. Deserializează lista din OUTPUT_FILE
+        List<Tranzactie> deserializedTranzactii;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(OUTPUT_FILE))) {
+            deserializedTranzactii = (List<Tranzactie>) ois.readObject();
+        }
+
+        // 5. Procesează comenzile
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+            if (line.isEmpty()) continue;
+
+            String[] parts = line.split("\\s+");
+            String command = parts[0];
+
+            if (command.equals("LIST")) {
+                for (Tranzactie t : deserializedTranzactii) {
+                    System.out.println(t);
+                }
+            } else if (command.equals("FILTER")) {
+                String prefix = parts[1];
+                boolean found = false;
+                for (Tranzactie t : deserializedTranzactii) {
+                    if (t.getData().startsWith(prefix)) {
+                        System.out.println(t);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    System.out.println("Niciun rezultat.");
+                }
+            } else if (command.equals("NOTE")) {
+                int id = Integer.parseInt(parts[1]);
+                boolean found = false;
+                for (Tranzactie t : deserializedTranzactii) {
+                    if (t.getId() == id) {
+                        System.out.println("NOTE[" + id + "]: " + t.getNote());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    System.out.println("NOTE[" + id + "]: not found");
+                }
+            }
+        }
+
+        scanner.close();
     }
 }
