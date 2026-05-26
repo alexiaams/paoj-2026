@@ -12,7 +12,12 @@ public abstract class Person {
     private String phoneNumber;
 
     protected Person(String firstName, String lastName, String CNP, String phoneNumber) {
-        this.id = generateId();
+        this(generateId(), firstName, lastName, CNP, phoneNumber);
+    }
+
+    protected Person(long id, String firstName, String lastName, String CNP, String phoneNumber) {
+        this.id = id;
+        updateNextId(id);
         setFirstName(firstName);
         setLastName(lastName);
         validateCNP(CNP);
@@ -22,6 +27,12 @@ public abstract class Person {
 
     private static synchronized long generateId() {
         return nextId++;
+    }
+
+    private static synchronized void updateNextId(long id) {
+        if (id >= nextId) {
+            nextId = id + 1;
+        }
     }
     
 

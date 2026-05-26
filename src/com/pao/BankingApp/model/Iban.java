@@ -16,6 +16,9 @@ public final class Iban {
 
 	public Iban(String value) {
 		this.value = normalizeAndValidate(value);
+		synchronized (GENERATED_IBANS) {
+			GENERATED_IBANS.add(this.value);
+		}
 	}
 
 	public static Iban generateForAccount(long accountId) {

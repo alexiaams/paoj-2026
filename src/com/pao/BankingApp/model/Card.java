@@ -20,6 +20,14 @@ public class Card {
 	private boolean active;
 
 	public Card(String holderName, long accountId) {
+		this(generateId(), holderName, accountId, null, null, null, true, true);
+	}
+
+	public Card(long id, String holderName, long accountId, String cardNumber, YearMonth expirationDate, String cvv, boolean active) {
+		this(id, holderName, accountId, cardNumber, expirationDate, cvv, active, false);
+	}
+
+	private Card(long id, String holderName, long accountId, String cardNumber, YearMonth expirationDate, String cvv, boolean active, boolean generateValues) {
 		if (holderName == null || holderName.isBlank()) {
 			throw new IllegalArgumentException("Holder name cannot be empty");
 		}
@@ -27,17 +35,25 @@ public class Card {
 			throw new IllegalArgumentException("Account id must be positive");
 		}
 
-		this.id = generateId();
+		this.id = id;
+		updateNextId(id);
 		this.holderName = holderName.trim();
 		this.accountId = accountId;
-		this.cardNumber = generateCardNumber(this.id, this.accountId);
-		this.expirationDate = YearMonth.now().plusYears(4);
-		this.cvv = generateCvv();
-		this.active = true;
+		this.cardNumber = generateValues ? generateCardNumber(this.id, this.accountId) : cardNumber;
+		this.expirationDate = expirationDate == null ? YearMonth.now().plusYears(4) : expirationDate;
+		this.cvv = cvv == null ? generateCvv() : cvv;
+		this.active = active;
+		registerCardNumber(this.cardNumber);
 	}
 
 	private static synchronized long generateId() {
 		return nextId++;
+	}
+
+	private static synchronized void updateNextId(long id) {
+		if (id >= nextId) {
+			nextId = id + 1;
+		}
 	}
 
 	private static String generateCardNumber(long cardId, long accountId) {
@@ -55,6 +71,12 @@ public class Card {
 					return candidate;
 				}
 			}
+		}
+	}
+
+	private static void registerCardNumber(String cardNumber) {
+		synchronized (GENERATED_CARD_NUMBERS) {
+			GENERATED_CARD_NUMBERS.add(cardNumber);
 		}
 	}
 

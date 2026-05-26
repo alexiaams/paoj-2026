@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.pao.BankingApp.repository.AccountRepository;
+import com.pao.BankingApp.repository.ClientRepository;
+
 public class Client extends Person {
     private static final double PLATINUM_SPENDING_THRESHOLD = 10_000.0;
     private static final int STUDENT_MAX_AGE = 25;
@@ -33,6 +36,22 @@ public class Client extends Person {
         this.totalSpent = 0;
         setClientType(clientType);
         this.accounts = new ArrayList<>();
+    }
+
+    public Client(long id, String firstName, String lastName, String CNP, String phoneNumber, ClientType clientType, LocalDate onboardingDate, boolean kycVerified, double totalSpent) {
+        super(id, firstName, lastName, CNP, phoneNumber);
+        this.clientCode = "CL-" + getId();
+        this.onboardingDate = onboardingDate == null ? LocalDate.now() : onboardingDate;
+        this.kycVerified = kycVerified;
+        this.totalSpent = 0;
+        setClientType(clientType);
+        this.accounts = new ArrayList<>();
+        if (totalSpent < 0) {
+            throw new IllegalArgumentException("Total spent cannot be negative");
+        }
+        if (totalSpent > 0) {
+            registerSpend(totalSpent);
+        }
     }
 
     @Override
@@ -85,6 +104,12 @@ public class Client extends Person {
         if (clientType == ClientType.NORMAL && totalSpent >= PLATINUM_SPENDING_THRESHOLD && !isStudentByAge()) {
             clientType = ClientType.PLATINUM;
         }
+
+        try {
+            new ClientRepository().update(this);
+        } catch (RuntimeException e) {
+            System.err.println("Warning: failed to persist client spending to DB: " + e.getMessage());
+        }
     }
 
     public List<BankAccount> getAccounts() {
@@ -92,6 +117,14 @@ public class Client extends Person {
     }
 
     public void addAccount(BankAccount account) {
+        addAccountInternal(account, true);
+    }
+
+    public void attachAccountFromDatabase(BankAccount account) {
+        addAccountInternal(account, false);
+    }
+
+    private void addAccountInternal(BankAccount account, boolean persistToDatabase) {
         if (account == null) {
             throw new IllegalArgumentException("Account cannot be null");
         }
@@ -102,6 +135,13 @@ public class Client extends Person {
         }
         accounts.add(account);
         ACCOUNT_OWNERS.put(account.getId(), this);
+        if (persistToDatabase) {
+            try {
+                new AccountRepository().updateClientOwner(account.getId(), getId());
+            } catch (RuntimeException e) {
+                System.err.println("Warning: failed to persist account owner to DB: " + e.getMessage());
+            }
+        }
     }
 
     public boolean removeAccountById(long accountId) {

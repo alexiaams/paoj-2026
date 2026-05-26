@@ -1,6 +1,8 @@
 package com.pao.BankingApp.model;
 
 import com.pao.BankingApp.exception.InsufficientFundsException;
+import com.pao.BankingApp.service.AuditService;
+import com.pao.BankingApp.repository.AccountRepository;
 
 public abstract class BankAccount implements TransferPaymentOperations {
 	private static long nextId = 1;
@@ -10,12 +12,38 @@ public abstract class BankAccount implements TransferPaymentOperations {
 	private double balance;
 
 	protected BankAccount(double initialBalance) {
+		this(generateId(), null, initialBalance, true);
+	}
+
+	protected BankAccount(long id, Iban iban, double initialBalance) {
+		this(id, iban, initialBalance, false);
+	}
+
+	private BankAccount(long id, Iban iban, double initialBalance, boolean generateIban) {
 		if (initialBalance < 0) {
 			throw new IllegalArgumentException("Initial balance cannot be negative");
 		}
-		this.id = nextId++;
-		this.iban = Iban.generateForAccount(this.id);
+		this.id = id;
+		updateNextId(id);
+		if (generateIban) {
+			this.iban = Iban.generateForAccount(this.id);
+		} else {
+			if (iban == null) {
+				throw new IllegalArgumentException("IBAN cannot be null");
+			}
+			this.iban = iban;
+		}
 		this.balance = initialBalance;
+	}
+
+	private static synchronized long generateId() {
+		return nextId++;
+	}
+
+	private static synchronized void updateNextId(long id) {
+		if (id >= nextId) {
+			nextId = id + 1;
+		}
 	}
 
 	public long getId() {
@@ -35,6 +63,12 @@ public abstract class BankAccount implements TransferPaymentOperations {
 	public void deposit(double amount) {
 		validateAmount(amount);
 		balance += amount;
+		AuditService.getInstance().log("deposit_withdraw");
+		try {
+			new AccountRepository().update(this);
+		} catch (RuntimeException e) {
+			System.err.println("Warning: failed to persist deposit to DB: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -44,6 +78,12 @@ public abstract class BankAccount implements TransferPaymentOperations {
 			throw new InsufficientFundsException("Insufficient funds for account " + iban);
 		}
 		balance -= amount;
+		AuditService.getInstance().log("deposit_withdraw");
+		try {
+			new AccountRepository().update(this);
+		} catch (RuntimeException e) {
+			System.err.println("Warning: failed to persist withdraw to DB: " + e.getMessage());
+		}
 	}
 
 	@Override

@@ -14,6 +14,10 @@ public final class Transaction {
 	private final String description;
 
 	public Transaction(long sourceAccountId, long destinationAccountId, double amount, String description) {
+		this(generateId(), sourceAccountId, destinationAccountId, amount, LocalDateTime.now(), description);
+	}
+
+	public Transaction(long id, long sourceAccountId, long destinationAccountId, double amount, LocalDateTime timestamp, String description) {
 		if (sourceAccountId <= 0) {
 			throw new IllegalArgumentException("Source account id must be positive");
 		}
@@ -27,16 +31,23 @@ public final class Transaction {
 			throw new IllegalArgumentException("Amount must be positive");
 		}
 
-		this.id = generateId();
+		this.id = id;
+		updateNextId(id);
 		this.sourceAccountId = sourceAccountId;
 		this.destinationAccountId = destinationAccountId;
 		this.amount = amount;
-		this.timestamp = LocalDateTime.now();
+		this.timestamp = timestamp == null ? LocalDateTime.now() : timestamp;
 		this.description = (description == null || description.isBlank()) ? "Transfer" : description.trim();
 	}
 
 	private static synchronized long generateId() {
 		return nextId++;
+	}
+
+	private static synchronized void updateNextId(long id) {
+		if (id >= nextId) {
+			nextId = id + 1;
+		}
 	}
 
 	public long getId() {

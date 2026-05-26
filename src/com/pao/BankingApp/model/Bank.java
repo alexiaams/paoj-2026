@@ -1,6 +1,9 @@
 package com.pao.BankingApp.model;
 
 import com.pao.BankingApp.exception.AccountNotFoundException;
+import com.pao.BankingApp.repository.ClientRepository;
+import com.pao.BankingApp.repository.CardRepository;
+import com.pao.BankingApp.service.AuditService;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,6 +19,8 @@ public class Bank {
 	private final Map<Long, Employee> employeesById;
 	private final Map<Long, BankAccount> accountsById;
 	private final Map<Long, Card> cardsById;
+	private final ClientRepository clientRepository;
+	private final CardRepository cardRepository;
 
 	public Bank(String name, String bic) {
 		if (name == null || name.isBlank()) {
@@ -31,6 +36,8 @@ public class Bank {
 		this.employeesById = new HashMap<>();
 		this.accountsById = new HashMap<>();
 		this.cardsById = new HashMap<>();
+		this.clientRepository = new ClientRepository();
+		this.cardRepository = new CardRepository();
 	}
 
 	public String getName() {
@@ -48,7 +55,13 @@ public class Bank {
 		if (hasPersonWithCnp(client.getCNP())) {
 			throw new IllegalArgumentException("A person with this CNP is already registered in the bank");
 		}
+		try {
+			clientRepository.save(client);
+		} catch (RuntimeException e) {
+			System.err.println("Warning: failed to persist client to DB: " + e.getMessage());
+		}
 		clientsById.put(client.getId(), client);
+		AuditService.getInstance().log("create_client");
 	}
 
 	public void addEmployee(Employee employee) {
@@ -59,6 +72,7 @@ public class Bank {
 			throw new IllegalArgumentException("A person with this CNP is already registered in the bank");
 		}
 		employeesById.put(employee.getId(), employee);
+		AuditService.getInstance().log("create_employee");
 	}
 
 	private boolean hasPersonWithCnp(String cnp) {
@@ -82,6 +96,7 @@ public class Bank {
 			throw new IllegalArgumentException("Account cannot be null");
 		}
 		accountsById.put(account.getId(), account);
+		AuditService.getInstance().log("register_account");
 	}
 
 	public void addCard(Card card) {
@@ -91,11 +106,24 @@ public class Bank {
 		if (!accountsById.containsKey(card.getAccountId())) {
 			throw new AccountNotFoundException("Cannot attach card. Account not found with id: " + card.getAccountId());
 		}
+		try {
+			cardRepository.save(card);
+		} catch (RuntimeException e) {
+			System.err.println("Warning: failed to persist card to DB: " + e.getMessage());
+		}
 		cardsById.put(card.getId(), card);
+		AuditService.getInstance().log("assign_account_and_issue_card");
 	}
 
 	public Optional<Client> findClientById(long clientId) {
-		return Optional.ofNullable(clientsById.get(clientId));
+		Client c = clientsById.get(clientId);
+		if (c != null) return Optional.of(c);
+		Optional<Client> fromDb = clientRepository.findById(clientId);
+		fromDb.ifPresent(client -> clientsById.put(client.getId(), client));
+		if (fromDb.isPresent()) {
+			AuditService.getInstance().log("find_by_id");
+		}
+		return fromDb;
 	}
 
 	public Optional<Employee> findEmployeeById(long employeeId) {
@@ -111,6 +139,10 @@ public class Bank {
 	}
 
 	public List<Client> getAllClients() {
+		if (clientsById.isEmpty()) {
+			List<Client> fromDb = clientRepository.findAll();
+			for (Client c : fromDb) clientsById.put(c.getId(), c);
+		}
 		return new ArrayList<>(clientsById.values());
 	}
 
@@ -127,6 +159,7 @@ public class Bank {
 	}
 
 	public boolean removeCard(long cardId) {
+		AuditService.getInstance().log("remove_entity");
 		return cardsById.remove(cardId) != null;
 	}
 

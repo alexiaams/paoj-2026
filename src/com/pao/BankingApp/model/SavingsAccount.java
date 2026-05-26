@@ -11,6 +11,11 @@ public class SavingsAccount extends BankAccount {
 		setInterestRate(interestRate);
 	}
 
+	public SavingsAccount(long id, Iban iban, double initialBalance, double interestRate) {
+		super(id, iban, initialBalance);
+		setInterestRate(interestRate);
+	}
+
 	public double getInterestRate() {
 		return interestRate;
 	}

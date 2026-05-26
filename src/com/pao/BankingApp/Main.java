@@ -14,11 +14,26 @@ import com.pao.BankingApp.model.SavingsAccount;
 import com.pao.BankingApp.model.Transaction;
 import com.pao.BankingApp.service.AccountService;
 import com.pao.BankingApp.service.TransactionService;
+import com.pao.BankingApp.util.SchemaRunner;
+import com.pao.BankingApp.util.DatabaseConnection;
+import com.pao.BankingApp.repository.ReportingRepository;
+import com.pao.BankingApp.repository.ClientRepository;
+import com.pao.BankingApp.repository.CardRepository;
+import com.pao.BankingApp.repository.TransactionRepository;
+import com.pao.BankingApp.service.AuditService;
 
 import java.util.List;
 
 public class Main {
 	public static void main(String[] args) {
+		// Initialize DB schema if requested in resources/db.properties (db.init=true)
+		SchemaRunner.runSchemaIfRequested();
+
+		// Optionally show DB URL for debugging
+		try {
+			String url = DatabaseConnection.getInstance().getProperty("db.url", "(unknown)");
+			System.out.println("Using DB URL: " + url);
+		} catch (Exception ignored) {}
 		AccountService accountService = AccountService.getInstance();
 		TransactionService transactionService = TransactionService.getInstance();
 		Bank bank = new Bank("PAOJ Bank", "PAOJROBU");
@@ -77,6 +92,9 @@ public class Main {
 		System.out.println("Account " + savings1.getId() + " IBAN: " + savings1.getIban());
 		System.out.println("Account " + checking2.getId() + " IBAN: " + checking2.getIban());
 		System.out.println("Account " + checking3.getId() + " IBAN: " + checking3.getIban());
+
+		// Audit: account objects created (models instantiated)
+		AuditService.getInstance().log("create_account_objects");
 
 		printStep(4, "Register accounts in AccountService and Bank");
 		accountService.addAccount(checking1);
@@ -156,6 +174,23 @@ public class Main {
 		}
 		System.out.println("Bank client ranking by total balance: " + bank.getClientsSortedByTotalBalanceDesc());
 
+		// Demonstrate JOIN queries (reporting)
+		ReportingRepository reports = new ReportingRepository();
+		System.out.println("\n-- Client summaries (account count + total balance)");
+		for (var r : reports.listClientsWithAccountCountAndTotalBalance()) {
+			System.out.println(r);
+		}
+
+		System.out.println("\n-- Transactions with IBANs");
+		for (var r : reports.listTransactionsWithIbans()) {
+			System.out.println(r);
+		}
+
+		System.out.println("\n-- Cards with account and client details");
+		for (var r : reports.listCardsWithAccountAndClientDetails()) {
+			System.out.println(r);
+		}
+
 		printStep(10, "Remove entities and trigger handled exceptions");
 		boolean removedCard = bank.removeCard(card3.getId());
 		boolean removedAccount = accountService.removeAccount(checking2.getId());
@@ -181,6 +216,53 @@ public class Main {
 		System.out.println("Bank still has clients: " + bank.getAllClients().size());
 		System.out.println("Bank still has employees: " + bank.getAllEmployees().size());
 		System.out.println("Bank snapshot: " + bank);
+
+		printStep(11, "CRUD demo: update client, deactivate a card, delete a transaction, show DB state");
+		ClientRepository clientRepo = new ClientRepository();
+		CardRepository cardRepo = new CardRepository();
+		TransactionRepository txRepo = new TransactionRepository();
+
+		// Update client: register additional spend and persist to DB
+		client1.registerSpend(500);
+		try {
+			clientRepo.update(client1);
+			System.out.println("Updated client totalSpent and persisted to DB: " + client1.getTotalSpent());
+		} catch (RuntimeException e) {
+			System.err.println("Warning: failed to update client in DB: " + e.getMessage());
+		}
+
+		System.out.println("-- Client summaries after update");
+		for (var r : reports.listClientsWithAccountCountAndTotalBalance()) {
+			System.out.println(r);
+		}
+
+		// Deactivate first card and persist
+		var maybeCard = bank.findCardById(card1.getId());
+		if (maybeCard.isPresent()) {
+			Card dbCard = maybeCard.get();
+			dbCard.deactivate();
+			try {
+				cardRepo.update(dbCard);
+				System.out.println("Deactivated card id=" + dbCard.getId());
+			} catch (RuntimeException e) {
+				System.err.println("Warning: failed to update card in DB: " + e.getMessage());
+			}
+		}
+
+		System.out.println("-- Cards with account and client details after deactivation");
+		for (var r : reports.listCardsWithAccountAndClientDetails()) {
+			System.out.println(r);
+		}
+
+		// Delete one transaction (if exists) to demonstrate DELETE
+		var allTx = txRepo.findAll();
+		if (!allTx.isEmpty()) {
+			long deleteId = allTx.get(0).getId();
+			txRepo.delete(deleteId);
+			System.out.println("Deleted transaction id=" + deleteId);
+		}
+
+		System.out.println("Total transactions recorded (DB): " + txRepo.countAll());
 	}
 
 	private static void printStep(int index, String label) {
