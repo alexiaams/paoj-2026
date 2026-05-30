@@ -1,171 +1,189 @@
-# BankingApp
+# BankingApp - Proiect Individual PAOJ (2026)
 
-BankingApp is a console-based banking demo used in the PAOJ 2026 materials. It combines the original in-memory OOP model with SQLite-backed persistence, JDBC repositories, reporting queries, and audit logging.
+**BankingApp** este o aplicatie consola Java conceputa ca sistem de gestiune bancara. Aceasta acopera modelarea orientata pe obiecte (Etapa I) si persistenta intr-o baza de date relationala SQLite utilizand JDBC, tranzactii si servicii de audit (Etapa II).
 
-## Repository Structure
+---
 
-Only the BankingApp part of the repository is shown here:
+## 1. Definirea Sistemului (Etapa I)
 
-```text
-src/com/pao/BankingApp/
-├── Main.java
-├── README.md
-├── exception/
-│   ├── AccountNotFoundException.java
-│   └── InsufficientFundsException.java
-├── model/
-│   ├── Bank.java
-│   ├── BankAccount.java
-│   ├── Card.java
-│   ├── CheckingAccount.java
-│   ├── Client.java
-│   ├── ClientType.java
-│   ├── Department.java
-│   ├── Employee.java
-│   ├── Iban.java
-│   ├── Person.java
-│   ├── SavingsAccount.java
-│   ├── Transaction.java
-│   └── TransferPaymentOperations.java
-├── repository/
-│   ├── AccountRepository.java
-│   ├── CardRepository.java
-│   ├── ClientRepository.java
-│   ├── ReportingRepository.java
-│   ├── Repository.java
-│   └── TransactionRepository.java
-└── service/
-	├── AccountService.java
-	├── AuditService.java
-	└── TransactionService.java
+### 1.1 - Lista de actiuni si interogari in sistem (Minim 10)
+Aplicatia implementeaza urmatoarele actiuni descrise si demonstrate in clasa `Main`:
+1.  **Adaugare / Inregistrare client nou** (cu validare CNP si determinare automata a tipului de client).
+2.  **Adaugare angajat nou** (cu verificare la nivelul bancii pentru a evita duplicarea CNP-urilor).
+3.  **Deschidere cont curent** (`CheckingAccount`) pentru un client.
+4.  **Deschidere cont de economii** (`SavingsAccount`) cu validarea ratei dobanzii (intre 0% si 20%).
+5.  **Atasare conturi bancare** clientilor existenti si inregistrarea acestora in gestiunea centralizata a serviciilor.
+6.  **Emitere card de debit** asociat unui cont bancar, generand automat numar de card valid (algoritmul Luhn) si cod CVV.
+7.  **Depunere numerar** in cont (actualizeaza soldul in memorie si in baza de date SQLite).
+8.  **Retragere numerar** din cont (cu validare de fonduri suficiente, aruncand exceptii specifice).
+9.  **Transfer de bani intre conturi** executat tranzactional in baza de date (debitare cont sursa, creditare cont destinatie si inregistrare tranzactie ca o singura unitate de lucru).
+10. **Cautare entitati** (clienti, angajati, conturi, carduri) dupa ID, CNP sau IBAN.
+11. **Sortare si clasificare**:
+    *   Sortarea conturilor descrescator dupa sold.
+    *   Sortarea clientilor descrescator dupa suma soldurilor cumulate.
+12. **Dezactivare card si Stergere tranzactie** (operatiuni CRUD de tip update/delete din DB).
 
-resources/
-├── db.properties
-└── schema.sql
-```
+### 1.2 - Tipuri de obiecte din domeniu (Minim 8)
+Sistemul utilizeaza urmatoarele obiecte de domeniu, aflate in pachetul `model`:
+1.  `Person` (Clasa abstracta) - Modelul de baza pentru entitatile umane din sistem.
+2.  `Client` - Reprezinta clientul bancii, asociat cu conturi, avand logica de upgrade de tip (ex: *Platinum* la cheltuieli mari).
+3.  `Employee` - Reprezinta angajatii bancii cu department, functie, sucursala si salariu.
+4.  `BankAccount` (Clasa abstracta) - Baza pentru conturi (gestioneaza IBAN, sold, depunere, retragere).
+5.  `CheckingAccount` - Cont curent fara dobanda.
+6.  `SavingsAccount` - Cont de economii cu dobanda aplicabila.
+7.  `Card` - Reprezinta cardul fizic atasat unui cont, cu stari de activare/expirare.
+8.  `Transaction` - Inregistrarea imutabila a unui transfer intre conturi.
+9.  `Iban` (Value Object) - Incapsuleaza formatul specific unui cod IBAN.
 
-## Architecture Overview
+---
 
-The application is split into three clear parts:
+## 2. Concepte OOP Aplicate (Etapa I)
 
-1. `Main` builds the scenario and prints each operation.
-2. `model` contains the banking domain objects and their rules.
-3. `service` contains singleton services that keep all state in memory.
+*   **Mostenire pe 2 niveluri**: Ierarhia `Person` (abstracta) -> `Client` si `Employee`.
+*   **Clasa abstracta in ierarhie**: `Person` declara metoda abstracta `getPersonType()`, implementata specific de subclase. `BankAccount` este de asemenea abstracta si implementeaza interfata `TransferPaymentOperations`.
+*   **Clasa imutabila**: `Transaction` este imutabila. Toate atributele sunt `final`, nu are setteri si se initializeaza complet la constructie.
+*   **Exceptii custom (minim 2)**: 
+    *   `AccountNotFoundException` (aruncata la cautari de conturi inexistente).
+    *   `InsufficientFundsException` (aruncata la retrageri care depasesc soldul disponibil).
+*   **Colectii utilizate**:
+    *   `List` (`ArrayList`) - Folosita in servicii si repozitorii pentru liste de conturi, clienti si tranzactii.
+    *   `Set` (`HashSet`) - Folosit in `Card` pentru a asigura unicitatea numerelor de card generate global.
+    *   `Map` (`HashMap`) - Folosit pentru indexare rapida in memorie (ex: maparea conturilor la detinatorii lor: `ACCOUNT_OWNERS`).
+*   **Sortari**: Implementate cu `Comparator` (de exemplu in `AccountService.getAccountsSortedByBalanceDesc` sau `Bank.getClientsSortedByTotalBalanceDesc`).
+*   **Servicii Singleton (Minim 2)**: 
+    *   `AccountService` (gestioneaza conturile in memorie si DB).
+    *   `TransactionService` (gestioneaza transferurile si tranzactiile).
+    *   `AuditService` (serviciul central de jurnalizare).
 
-The domain objects still live in memory during the demo, but the part II implementation also persists clients, accounts, cards, and transactions in SQLite through JDBC repositories.
+---
 
-## Package Responsibilities
+## 3. Persistenta JDBC si Tranzactii (Etapa II)
 
-| Package | Role |
-|---|---|
-| `com.pao.BankingApp` | Console entry point and scenario orchestration |
-| `com.pao.BankingApp.model` | Domain entities, value objects, inheritance hierarchy, and business rules |
-| `com.pao.BankingApp.repository` | JDBC repositories and reporting queries |
-| `com.pao.BankingApp.service` | Singleton services for accounts, transactions, and auditing |
-| `com.pao.BankingApp.util` | Database connection and schema bootstrap |
-| `com.pao.BankingApp.exception` | Custom runtime exceptions |
+### 3.1 - Schema Bazei de Date (`schema.sql` si `db.properties`)
+Schema este definita in [schema.sql](file:///c:/Users/alexi/Desktop/PAOJ/paoj-2026/resources/schema.sql) si contine:
+*   Tabelele: `clients`, `accounts`, `cards`, `transactions`.
+*   Campuri de tip `PRIMARY KEY AUTOINCREMENT` pe toate tabelele.
+*   **4 relatii de tip `FOREIGN KEY`** cu reguli de integritate:
+    *   `accounts.client_id` -> `clients.id` (cu `ON DELETE CASCADE`)
+    *   `cards.account_id` -> `accounts.id` (cu `ON DELETE CASCADE`)
+    *   `transactions.source_account_id` -> `accounts.id`
+    *   `transactions.destination_account_id` -> `accounts.id`
+*   `DROP TABLE IF EXISTS` la inceputul scriptului pentru a garanta o re-rulare curata.
 
-## OOP Concepts Used
+Conexiunea este configurata in mod extern prin [db.properties](file:///c:/Users/alexi/Desktop/PAOJ/paoj-2026/resources/db.properties), fara a hardcoda credentialele in cod. Clasa singleton `DatabaseConnection` incarca dinamic aceste proprietati pe baza classpath-ului.
 
-### Encapsulation
-# BankingApp
+### 3.2 - Repozitorii si CRUD Complet (>=4 entitati)
+Interfata generica `Repository<T, ID>` este declarata in [Repository.java](file:///c:/Users/alexi/Desktop/PAOJ/paoj-2026/src/com/pao/BankingApp/repository/Repository.java). 
 
-BankingApp is a console-based banking demo used in the PAOJ 2026 materials. It started as an in-memory OOP exercise and in Etapa II was extended with SQLite persistence (JDBC), repository classes, reporting queries, and audit logging.
+Sunt implementate 4 clase repozitorii concrete care realizeaza CRUD complet prin JDBC:
+1.  **ClientRepository** - Gestioneaza clientii in tabela `clients`.
+2.  **AccountRepository** - Gestioneaza conturile in tabela `accounts` (sincronizata cu owner-ul din memorie in caz de salvare fara ID specificat).
+3.  **CardRepository** - Gestioneaza cardurile in tabela `cards`.
+4.  **TransactionRepository** - Gestioneaza inregistrarile de tranzactie in tabela `transactions`.
 
-## Correct Project Tree (relevant parts)
+*Nota:* Toate interogarile SQL din repozitorii folosesc **`PreparedStatement`** (pentru securitate impotriva SQL Injection) si inchid resursele JDBC in mod automat prin structura **`try-with-resources`**.
 
-The README previously showed only the local package layout. Below is a repository-level view (paths are workspace-relative):
+### 3.3 - Tranzactii JDBC Explicite
+In clasa [TransactionService.java](file:///c:/Users/alexi/Desktop/PAOJ/paoj-2026/src/com/pao/BankingApp/service/TransactionService.java) la metoda `transfer()`, debitarea contului sursa, creditarea contului destinatie si scrierea istoricului in tabela `transactions` sunt grupate intr-o **tranzactie explicita**:
+*   Dezactivare auto-commit (`conn.setAutoCommit(false)`).
+*   Executare actualizari.
+*   Commit la succes (`conn.commit()`).
+*   Rollback automat in blocul `catch` in caz de `SQLException` (`conn.rollback()`).
+
+### 3.4 - Interogari Avansate cu JOIN (Minim 3)
+Clasa [ReportingRepository.java](file:///c:/Users/alexi/Desktop/PAOJ/paoj-2026/src/com/pao/BankingApp/repository/ReportingRepository.java) implementeaza 3 rapoarte complexe bazate pe JOIN-uri SQL:
+1.  `listClientsWithAccountCountAndTotalBalance()` - Combina `clients` si `accounts` printr-un `LEFT JOIN` cu functii de agregare (`COUNT`, `SUM`, `COALESCE`) pentru a obtine o privire de ansamblu asupra portofoliului fiecarui client.
+2.  `listTransactionsWithIbans()` - Realizeaza un `JOIN` multiplu intre `transactions` si `accounts` (de doua ori) pentru a afisa sumele transferate direct impreuna cu IBAN-ul sursa si cel destinatie.
+3.  `listCardsWithAccountAndClientDetails()` - Face `JOIN` intre `cards`, `accounts` si `clients` pentru a genera detalii despre carduri, conturile asociate si numele titularului.
+
+---
+
+## 4. Serviciul de Audit (Etapa II)
+
+Clasa [AuditService.java](file:///c:/Users/alexi/Desktop/PAOJ/paoj-2026/src/com/pao/BankingApp/service/AuditService.java) inregistreaza actiunile rulate in fisierul `audit.csv`.
+*   **Format**: `nume_actiune,timestamp_ISO_8601`.
+*   **Mod deschidere**: *Append* (pentru a nu pierde intrarile anterioare).
+*   **Thread-safety**: Asigurat prin utilizarea unui `ReentrantLock` exclusiv pe zona critica de scriere in fisier.
+*   Peste 10 actiuni distincte logheaza activitatea in fisier (ex: `create_client`, `create_account`, `transfer_money`, `deposit_withdraw`, `remove_entity`, `list_and_sort` etc.).
+
+---
+
+## 5. Structura Proiectului (Tree)
+
+Proiectul este structurat respectand recomandarile oficiale din laboratoare:
 
 ```text
 paoj-2026/
-├── src/
-│   └── com/pao/BankingApp/
-│       ├── Main.java
-│       ├── exception/
-│       ├── model/
-│       ├── repository/
-│       ├── service/
-│       └── util/
 ├── resources/
-│   ├── db.properties
-│   └── schema.sql
-├── lib/
-│   └── sqlite-jdbc-3.42.0.0.jar  (required at runtime; keep under BankingApp/lib for demo)
-└── run-wsl.sh
+│   ├── db.properties               - Proprietati conexiune SQLite / MySQL
+│   └── schema.sql                  - Schema bazei de date (DDL)
+└── src/
+    └── com/pao/BankingApp/
+        ├── Main.java               - Orchestrator scenariu demo
+        ├── README.md               - Acest document de documentare
+        ├── audit.csv               - Fisierul de audit generat la rulare
+        ├── paoj_proiect.db         - Fisierul bazei de date SQLite generat la rulare
+        ├── exception/              - Exceptii custom
+        │   ├── AccountNotFoundException.java
+        │   └── InsufficientFundsException.java
+        ├── lib/                    - Biblioteci externe (driver JDBC)
+        │   └── sqlite-jdbc-3.42.0.0.jar
+        ├── model/                  - Modele de domeniu si reguli de business
+        │   ├── Bank.java
+        │   ├── BankAccount.java
+        │   ├── Card.java
+        │   ├── CheckingAccount.java
+        │   ├── Client.java
+        │   ├── ClientType.java
+        │   ├── Department.java
+        │   ├── Employee.java
+        │   ├── Iban.java
+        │   ├── Person.java
+        │   ├── SavingsAccount.java
+        │   ├── Transaction.java
+        │   └── TransferPaymentOperations.java
+        ├── repository/             - Logica JDBC (CRUD & JOIN)
+        │   ├── AccountRepository.java
+        │   ├── CardRepository.java
+        │   ├── ClientRepository.java
+        │   ├── ReportingRepository.java
+        │   ├── Repository.java      - Interfata generica Repository
+        │   └── TransactionRepository.java
+        ├── service/                - Servicii Singleton (Tranzactii, conturi, audit)
+        │   ├── AccountService.java
+        │   ├── AuditService.java
+        │   └── TransactionService.java
+        └── util/                   - Utilitare (conexiune DB, SchemaRunner)
+            ├── DatabaseConnection.java
+            └── SchemaRunner.java
 ```
 
-Inside `src/com/pao/BankingApp` the package layout is:
+---
 
-```text
-src/com/pao/BankingApp/
-├── Main.java
-├── exception/
-├── model/
-├── repository/
-├── service/
-└── util/
+## 6. Instructiuni de Compilare si Rulare
+
+Pentru a curata baza de date anterioara, a compila codul si a rula scenariul demonstrativ:
+
+### Windows PowerShell:
+```powershell
+# Curatare compilari anterioare si DB
+Remove-Item -Path "src/com/pao/BankingApp/out" -Recurse -ErrorAction SilentlyContinue
+
+# Creare director output
+New-Item -ItemType Directory -Path "src/com/pao/BankingApp/out" -Force | Out-Null
+
+# Compilare resurse Java utilizand classpath-ul JDBC
+javac -cp "src/com/pao/BankingApp/lib/sqlite-jdbc-3.42.0.0.jar" -d "src/com/pao/BankingApp/out" src/com/pao/BankingApp/*.java src/com/pao/BankingApp/exception/*.java src/com/pao/BankingApp/model/*.java src/com/pao/BankingApp/repository/*.java src/com/pao/BankingApp/service/*.java src/com/pao/BankingApp/util/*.java
+
+# Copiere fisiere proprietati si schema in classpath
+Copy-Item -Path "resources/*" -Destination "src/com/pao/BankingApp/out" -Force
+
+# Rulare scenariu demonstrativ
+java -cp "src/com/pao/BankingApp/out;src/com/pao/BankingApp/lib/sqlite-jdbc-3.42.0.0.jar" com.pao.BankingApp.Main
 ```
 
-See the actual files in the workspace for full listing.
-
-## Etapa II — What I implemented and where
-
-This section describes exactly what was added/changed for Etapa II (JDBC persistence and reporting):
-
-- Persistence layer (JDBC repositories):
-	- `src/com/pao/BankingApp/repository/` contains `ClientRepository`, `AccountRepository`, `CardRepository`, `TransactionRepository`, and `ReportingRepository` implementing CRUD and reporting queries.
-
-- Database bootstrap and configuration:
-	- `resources/schema.sql` contains the SQL DDL used by `SchemaRunner` to create tables.
-	- `resources/db.properties` contains DB settings used by `DatabaseConnection`.
-	- `src/com/pao/BankingApp/util/SchemaRunner.java` runs the schema when `db.init=true`.
-
-- Connection management:
-	- `src/com/pao/BankingApp/util/DatabaseConnection.java` centralizes JDBC `Connection` creation (uses sqlite-jdbc).
-
-- Transactional operations:
-	- `TransactionService.transfer()` now performs transfers inside an explicit JDBC transaction and uses `TransactionRepository.saveWithConnection()` to persist the `Transaction` atomically with account updates.
-
-- Data consistency fixes (important):
-	- Model classes now support constructing objects with the explicit DB id/IBAN/timestamp when loading from the database; repository `mapRowToX` methods reconstruct objects while preserving DB identifiers (so in-memory IDs match the DB and reporting queries are consistent).
-	- `Client.registerSpend()` upgrades client type in memory and the change is persisted via `ClientRepository.update()` so reports reflect the upgrade.
-
-- Audit logging:
-	- `AuditService` appends demo actions to `audit.csv` in a thread-safe way (uses `ReentrantLock`).
-
-- Reporting queries:
-	- `ReportingRepository` contains JOIN queries that produce the demo reports shown by `Main` (clients + accounts + transactions, aggregates, counts).
-
-## How Etapa II maps to the demo (Main)
-
-- The demo (`Main`) now demonstrates the same scenario but with persistent storage: clients/accounts/cards/transactions written to SQLite and read back on demand. Key observable effects:
-	- Transaction rows have stable IDs and timestamps after persistence.
-	- Client spending upgrades are reflected in DB-backed reports.
-	- Reporting queries show joined data from `clients`, `accounts`, `cards`, and `transactions` tables.
-
-## Run the demo
-
-From WSL, inside the project root or `src/com/pao/BankingApp`:
-
+### Linux / WSL:
+Din radacina proiectului `paoj-2026`:
 ```bash
-./run-wsl.sh
+./src/com/pao/BankingApp/run-wsl.sh
 ```
-
-Requirements:
-
-- Place `sqlite-jdbc-3.42.0.0.jar` under `src/com/pao/BankingApp/lib/` (or `paoj-2026/lib/` and update classpath in the run script).
-- `resources/schema.sql` and `resources/db.properties` must be present (they are in the repo).
-
-Generated files you can remove between runs:
-
-- `out/` (compiled classes)
-- `audit.csv` (audit log)
-- `paoj_proiect.db` (SQLite database file)
-
-## Notes and known limitations
-
-- The repository preserves in-memory demo behavior while adding persistence — the project still uses plain `javac`/`java` (no Maven/Gradle).
-- A full workspace compile may fail due to unrelated labs and missing third-party jars; the BankingApp demo compiles and runs in isolation.
-
-If you want the README formatted differently, or a shorter student-facing summary for submission, tell me the exact layout you prefer and I will adjust it.
-| `SavingsAccount` | concrete specialization with extra interest-rate behavior |

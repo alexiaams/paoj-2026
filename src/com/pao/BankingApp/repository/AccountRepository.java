@@ -2,6 +2,7 @@ package com.pao.BankingApp.repository;
 
 import com.pao.BankingApp.model.BankAccount;
 import com.pao.BankingApp.model.CheckingAccount;
+import com.pao.BankingApp.model.Client;
 import com.pao.BankingApp.model.Iban;
 import com.pao.BankingApp.model.SavingsAccount;
 import com.pao.BankingApp.util.DatabaseConnection;
@@ -29,7 +30,10 @@ public class AccountRepository implements Repository<BankAccount, Long> {
 
     @Override
     public void save(BankAccount account) {
-        throw new UnsupportedOperationException("Use save(account, clientId) to persist with owner");
+        Long clientId = Client.findOwnerByAccountId(account.getId())
+                .map(Client::getId)
+                .orElse(null);
+        save(account, clientId);
     }
 
     public void save(BankAccount account, Long clientId) {
