@@ -20,19 +20,55 @@ public class DatabaseConnection {
 
     private DatabaseConnection() throws IOException, SQLException {
         Properties props = new Properties();
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("db.properties")) {
-            if (is == null) {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("db.properties");
+        if (is == null) {
+            // fallback: resource might be under package resources directory
+            is = getClass().getClassLoader().getResourceAsStream("com/pao/laboratory14/exercise2/resources/db.properties");
+        }
+        if (is == null) {
+            // fallback: try relative file path in workspace (when resources are not on classpath)
+            String cwd = System.getProperty("user.dir");
+            String[] candidates = new String[] {
+                cwd + "/src/com/pao/laboratory14/exercise2/resources/db.properties",
+                cwd + "/paoj-2026/src/com/pao/laboratory14/exercise2/resources/db.properties",
+                "src/com/pao/laboratory14/exercise2/resources/db.properties"
+            };
+            java.io.File f = null;
+            for (String c : candidates) {
+                java.io.File cf = new java.io.File(c);
+                if (cf.exists()) { f = cf; break; }
+            }
+            if (f != null) {
+                try (InputStream fis = new java.io.FileInputStream(f)) {
+                    props.load(fis);
+                }
+            } else {
                 throw new IOException(
-                    "db.properties nu a fost gasit pe classpath. " +
-                    "Marcheaza 'exercise2/resources/' ca Resources Root in IntelliJ: " +
-                    "clic dreapta -> Mark Directory as -> Resources Root"
+                    "db.properties nu a fost gasit pe classpath. Marcheaza 'exercise2/resources/' ca Resources Root in IntelliJ: clic dreapta -> Mark Directory as -> Resources Root"
                 );
             }
-            props.load(is);
+        } else {
+            try (InputStream ris = is) {
+                props.load(ris);
+            }
         }
         String url      = props.getProperty("db.url");
         String user     = props.getProperty("db.user", "");
         String password = props.getProperty("db.password", "");
+        // Try to explicitly load SQLite driver to ensure registration with DriverManager
+        try {
+            Class.forName("org.sqlite.JDBC");
+            try {
+                // Try to instantiate and register driver explicitly to avoid classloader issues
+                java.sql.Driver d = (java.sql.Driver) Class.forName("org.sqlite.JDBC").getDeclaredConstructor().newInstance();
+                try {
+                    java.sql.DriverManager.registerDriver(d);
+                } catch (SQLException ignored) {
+                }
+            } catch (ReflectiveOperationException ignored) {
+            }
+        } catch (ClassNotFoundException ignored) {
+        }
         this.connection = DriverManager.getConnection(url, user, password);
     }
 
